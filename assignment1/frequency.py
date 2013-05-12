@@ -1,0 +1,47 @@
+import sys
+import json
+#compute term frequency
+
+count = 0
+frequency = {}
+occurrence = {}
+
+def readTwitter(tweet_file):
+    result = ""
+    for line in tweet_file:
+	response = json.loads(line)
+	if(response.has_key("created_at")):
+		result += response["text"] + "\n"
+    return result
+
+def loadoccurrence(twitter_string): 
+    global occurrence, count
+    for text in twitter_string.split("\n"):
+	for word in text.split(" "):
+	    if(occurrence.has_key(word)):
+		occurrence[word] += 1
+		count += 1.0
+	    else:
+		occurrence[word] = 1
+		count += 1.0
+		
+def getfrequency():
+    global occurrence, count, frequency
+    for word in occurrence.iterkeys():
+	frequency[word] = repr(occurrence[word] / count)
+
+    
+
+def main():
+    tweet_file = open(sys.argv[1])
+    twitter_text = readTwitter(tweet_file)
+    loadoccurrence(twitter_text)
+    getfrequency()
+
+    for word in frequency.iterkeys():
+        if(word != ""):
+	   print word + " " + str(frequency[word])
+	
+
+if __name__ == '__main__':
+    main()
